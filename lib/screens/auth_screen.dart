@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../theme/app_theme.dart';
+import '../widgets/fade_slide.dart';
+import '../widgets/fintech_ui.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -61,75 +63,120 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                children: [
-                  Icon(Icons.account_balance_wallet,
-                      size: 56, color: AppColors.teal),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Vaultiq',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+      body: Container(
+        decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: FadeSlide(
+                  child: GlassCard(
+                    padding: const EdgeInsets.all(28),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            gradient: AppColors.heroGradient(dark),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.lock_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign in to sync your portfolio across devices',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.6),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Vaultiq',
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                  ),
-                  const SizedBox(height: 32),
-                  TextField(
-                    controller: _email,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                    autocorrect: false,
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _password,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
-                  ],
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _loading ? null : _submit,
-                      child: _loading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(_signUp ? 'Create account' : 'Sign in'),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Sign in to sync your portfolio across devices',
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
+                                  ),
+                        ),
+                        const SizedBox(height: 28),
+                        TextField(
+                          controller: _email,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          autocorrect: false,
+                        ),
+                        const SizedBox(height: 14),
+                        TextField(
+                          controller: _password,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.key_rounded),
+                          ),
+                          obscureText: true,
+                        ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 14),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.coral.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.coral.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Text(
+                              _error!,
+                              style: const TextStyle(
+                                color: AppColors.coral,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 22),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: _loading ? null : _submit,
+                            child: _loading
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(_signUp ? 'Create account' : 'Sign in'),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => setState(() => _signUp = !_signUp),
+                          child: Text(
+                            _signUp
+                                ? 'Already have an account? Sign in'
+                                : 'Need an account? Sign up',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  TextButton(
-                    onPressed: () => setState(() => _signUp = !_signUp),
-                    child: Text(
-                      _signUp
-                          ? 'Already have an account? Sign in'
-                          : 'Need an account? Sign up',
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

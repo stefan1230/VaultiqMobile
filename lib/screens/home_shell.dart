@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../providers/portfolio_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/fintech_ui.dart';
 import 'dashboard_screen.dart';
 import 'debts_screen.dart';
 import 'insights_screen.dart';
@@ -59,9 +60,7 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final portfolio = context.watch<PortfolioProvider>();
     if (!portfolio.ready) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const FintechLoader();
     }
 
     final insights = portfolio.insights;
@@ -88,65 +87,147 @@ class _HomeShellState extends State<HomeShell> {
     ];
 
     const titles = ['Vaultiq', 'Debts', 'Funds', 'Insights', 'More'];
+    final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
-        title: Text(
-          titles[_index],
-          style: const TextStyle(fontWeight: FontWeight.w800),
+        title: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 280),
+          child: Text(
+            titles[_index],
+            key: ValueKey(_index),
+          ),
         ),
         actions: [
           if (_userId != null)
             Padding(
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.only(right: 16),
               child: Center(
-                child: Text(
-                  syncLabel,
-                  style: TextStyle(
-                    fontSize: 12,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
                     color: portfolio.syncStatus == SyncStatus.synced
-                        ? AppColors.teal
-                        : null,
+                        ? AppColors.teal.withValues(alpha: 0.15)
+                        : Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (portfolio.syncStatus == SyncStatus.syncing)
+                        SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.teal,
+                          ),
+                        )
+                      else
+                        Icon(
+                          portfolio.syncStatus == SyncStatus.synced
+                              ? Icons.cloud_done_rounded
+                              : Icons.cloud_off_rounded,
+                          size: 14,
+                          color: portfolio.syncStatus == SyncStatus.synced
+                              ? AppColors.teal
+                              : null,
+                        ),
+                      const SizedBox(width: 6),
+                      Text(
+                        syncLabel,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: portfolio.syncStatus == SyncStatus.synced
+                              ? AppColors.teal
+                              : null,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
         ],
       ),
-      body: IndexedStack(
-        index: _index,
-        children: screens,
+      body: Padding(
+        padding: EdgeInsets.only(bottom: shellBottomClearance(context)),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 320),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.03, 0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            );
+          },
+          child: KeyedSubtree(
+            key: ValueKey(_index),
+            child: screens[_index],
+          ),
+        ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: dark ? 0.4 : 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.credit_card_outlined),
-            selectedIcon: Icon(Icons.credit_card),
-            label: 'Debts',
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: NavigationBar(
+              selectedIndex: _index,
+              onDestinationSelected: (i) => setState(() => _index = i),
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.credit_card_outlined),
+                  selectedIcon: Icon(Icons.credit_card_rounded),
+                  label: 'Debts',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.savings_outlined),
+                  selectedIcon: Icon(Icons.savings_rounded),
+                  label: 'Funds',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.insights_outlined),
+                  selectedIcon: Icon(Icons.insights_rounded),
+                  label: 'Insights',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.more_horiz_rounded),
+                  selectedIcon: Icon(Icons.more_horiz_rounded),
+                  label: 'More',
+                ),
+              ],
+            ),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.savings_outlined),
-            selectedIcon: Icon(Icons.savings),
-            label: 'Funds',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.insights_outlined),
-            selectedIcon: Icon(Icons.insights),
-            label: 'Insights',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            selectedIcon: Icon(Icons.more_horiz),
-            label: 'More',
-          ),
-        ],
+        ),
       ),
     );
   }

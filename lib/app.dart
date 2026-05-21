@@ -9,6 +9,7 @@ import 'screens/home_shell.dart';
 import 'services/cloud_sync.dart';
 import 'services/local_store.dart';
 import 'theme/app_theme.dart';
+import 'widgets/fade_slide.dart';
 
 class VaultiqApp extends StatelessWidget {
   const VaultiqApp({super.key});
@@ -62,7 +63,7 @@ class _RootState extends State<_Root> {
         final user = session?.user;
 
         if (_showAuth && user == null) {
-          return AuthScreen();
+          return const AuthScreen();
         }
 
         if (user != null || _offline) {
@@ -96,46 +97,92 @@ class _Welcome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              Icon(Icons.account_balance_wallet,
-                  size: 72, color: AppColors.teal),
-              const SizedBox(height: 16),
-              Text(
-                'Vaultiq',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w800,
+      body: Container(
+        decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(),
+                FadeSlide(
+                  child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: AppColors.heroGradient(dark),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.teal.withValues(alpha: 0.35),
+                          blurRadius: 32,
+                          offset: const Offset(0, 14),
+                        ),
+                      ],
                     ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Track credit cards, loans, and savings goals in one place.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withValues(alpha: 0.6),
+                    child: const Icon(
+                      Icons.account_balance_wallet_rounded,
+                      size: 56,
+                      color: Colors.white,
                     ),
-              ),
-              const Spacer(),
-              FilledButton(
-                onPressed: onSignIn,
-                child: const Text('Sign in with cloud sync'),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: onOffline,
-                child: const Text('Continue offline'),
-              ),
-            ],
+                  ),
+                ),
+                ),
+                const SizedBox(height: 28),
+                FadeSlide(
+                  delay: const Duration(milliseconds: 100),
+                  child: Text(
+                  'Vaultiq',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                ),
+                const SizedBox(height: 12),
+                FadeSlide(
+                  delay: const Duration(milliseconds: 180),
+                  child: Text(
+                  'Track credit cards, loans, and savings goals — with clarity and confidence.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        height: 1.5,
+                      ),
+                ),
+                ),
+                const Spacer(),
+                FadeSlide(
+                  delay: const Duration(milliseconds: 280),
+                  child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: onSignIn,
+                    icon: const Icon(Icons.cloud_sync_rounded, size: 20),
+                    label: const Text('Sign in with cloud sync'),
+                  ),
+                ),
+                ),
+                const SizedBox(height: 12),
+                FadeSlide(
+                  delay: const Duration(milliseconds: 360),
+                  child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onOffline,
+                    icon: const Icon(Icons.offline_bolt_rounded, size: 20),
+                    label: const Text('Continue offline'),
+                  ),
+                ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         ),
       ),

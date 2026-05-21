@@ -5,6 +5,8 @@ import '../providers/portfolio_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/format.dart';
 import '../widgets/currency_input.dart';
+import '../widgets/fade_slide.dart';
+import '../widgets/fintech_ui.dart';
 
 class SavingsScreen extends StatelessWidget {
   const SavingsScreen({super.key, this.userId});
@@ -19,6 +21,7 @@ class SavingsScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('New savings goal'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -67,6 +70,7 @@ class SavingsScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(action == 'add' ? 'Add funds' : 'Withdraw'),
         content: CurrencyInput(
           label: 'Amount',
@@ -91,118 +95,143 @@ class SavingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+
     return Consumer<PortfolioProvider>(
       builder: (context, portfolio, _) {
         final goals = portfolio.savings;
         final insights = portfolio.insights;
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Savings & goals',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                  ),
-                ),
-                IconButton(
+        return Container(
+          decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+            children: [
+              SectionHeader(
+                title: 'Savings & goals',
+                subtitle: '${goals.length} active goals',
+                trailing: IconButton.filledTonal(
                   onPressed: () => _addGoal(context),
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      formatLKR(insights.totalSaved),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.teal,
-                          ),
-                    ),
-                    Text(
-                      'of ${formatLKR(insights.totalSavingsTarget)} target',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: (insights.savingsProgress / 100).clamp(0, 1),
-                      color: AppColors.teal,
-                    ),
-                  ],
+                  icon: const Icon(Icons.add_rounded),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            ...List.generate(goals.length, (i) {
-              final g = goals[i];
-              final pct =
-                  g.target > 0 ? (g.current / g.target * 100).clamp(0, 100) : 0.0;
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              g.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => portfolio.deleteSavings(
-                              i,
-                              userId: userId,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '${formatLKR(g.current)} / ${formatLKR(g.target)}',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(value: pct / 100),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => _mutate(context, i, 'add'),
-                              child: const Text('Add'),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => _mutate(context, i, 'subtract'),
-                              child: const Text('Withdraw'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+              FadeSlide(
+                child: HeroBalanceCard(
+                  label: 'Total saved',
+                  valueText: formatLKR(insights.totalSaved),
+                  subtitle:
+                      'of ${formatLKR(insights.totalSavingsTarget)} target',
+                  accentIcon: Icons.savings_rounded,
+                  trailing: Text(
+                    '${insights.savingsProgress.toStringAsFixed(0)}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-              );
-            }),
-          ],
+              ),
+              const SizedBox(height: 12),
+              FadeSlide(
+                delay: const Duration(milliseconds: 80),
+                child: GlassCard(
+                  child: AnimatedProgressBar(
+                    value: (insights.savingsProgress / 100).clamp(0, 1),
+                    color: AppColors.emerald,
+                    height: 10,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...List.generate(goals.length, (i) {
+                final g = goals[i];
+                final pct = g.target > 0
+                    ? (g.current / g.target * 100).clamp(0, 100)
+                    : 0.0;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: FadeSlide(
+                    delay: Duration(milliseconds: 120 + i * 70),
+                    child: GlassCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppColors.emerald.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.flag_rounded,
+                                  color: AppColors.emerald,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  g.name,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline_rounded),
+                                onPressed: () => portfolio.deleteSavings(
+                                  i,
+                                  userId: userId,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${formatLKR(g.current)} / ${formatLKR(g.target)}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 10),
+                          AnimatedProgressBar(
+                            value: pct / 100,
+                            color: AppColors.emerald,
+                          ),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      _mutate(context, i, 'add'),
+                                  icon: const Icon(Icons.add, size: 18),
+                                  label: const Text('Add'),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      _mutate(context, i, 'subtract'),
+                                  icon: const Icon(Icons.remove, size: 18),
+                                  label: const Text('Withdraw'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
         );
       },
     );
