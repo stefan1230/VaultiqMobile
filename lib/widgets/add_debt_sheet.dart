@@ -72,12 +72,12 @@ class _AddDebtSheetState extends State<AddDebtSheet> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.coral.withValues(alpha: 0.12),
+                  color: AppColors.orange.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.add_card_rounded,
-                  color: AppColors.coral,
+                  color: AppColors.orange,
                 ),
               ),
               const SizedBox(width: 12),

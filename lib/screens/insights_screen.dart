@@ -17,7 +17,7 @@ class InsightsScreen extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+      color: dark ? AppColors.surfaceDark : AppColors.surfaceLight,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         children: [
@@ -34,7 +34,7 @@ class InsightsScreen extends StatelessWidget {
                   compact: true,
                   delay: const Duration(milliseconds: 60),
                   icon: Icons.percent_rounded,
-                  accent: AppColors.coral,
+                  accent: AppColors.orange,
                 ),
               ),
               const SizedBox(width: 12),
@@ -42,7 +42,7 @@ class InsightsScreen extends StatelessWidget {
                 child: StatCard(
                   label: 'Total paydown',
                   value: insights.totalPaydown,
-                  accent: AppColors.emerald,
+                  accent: AppColors.lime,
                   compact: true,
                   delay: const Duration(milliseconds: 120),
                   icon: Icons.trending_down_rounded,
@@ -85,7 +85,7 @@ class InsightsScreen extends StatelessWidget {
                 children: [
                   _MetricIcon(
                     icon: Icons.pie_chart_rounded,
-                    color: AppColors.teal,
+                    color: AppColors.lime,
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -98,7 +98,7 @@ class InsightsScreen extends StatelessWidget {
                     '${insights.avgCcUtilization.toStringAsFixed(0)}%',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.teal,
+                          color: AppColors.lime,
                         ),
                   ),
                 ],

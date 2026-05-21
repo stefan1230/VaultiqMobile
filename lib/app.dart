@@ -100,9 +100,9 @@ class _Welcome extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
-        child: SafeArea(
+      backgroundColor:
+          dark ? AppColors.surfaceDark : AppColors.surfaceLight,
+      body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(28),
             child: Column(
@@ -115,10 +115,10 @@ class _Welcome extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: AppColors.heroGradient(dark),
+                      color: AppColors.lime,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.teal.withValues(alpha: 0.35),
+                          color: AppColors.lime.withValues(alpha: 0.35),
                           blurRadius: 32,
                           offset: const Offset(0, 14),
                         ),
@@ -127,7 +127,7 @@ class _Welcome extends StatelessWidget {
                     child: const Icon(
                       Icons.account_balance_wallet_rounded,
                       size: 56,
-                      color: Colors.white,
+                      color: AppColors.onLime,
                     ),
                   ),
                 ),
@@ -148,10 +148,7 @@ class _Welcome extends StatelessWidget {
                   'Track credit cards, loans, and savings goals — with clarity and confidence.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.6),
+                        color: AppColors.textMuted,
                         height: 1.5,
                       ),
                 ),
@@ -184,7 +181,6 @@ class _Welcome extends StatelessWidget {
               ],
             ),
           ),
-        ),
       ),
     );
   }

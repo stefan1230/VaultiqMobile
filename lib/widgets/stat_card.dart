@@ -28,7 +28,7 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? AppColors.teal;
+    final color = accent ?? AppColors.lime;
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return FadeSlide(

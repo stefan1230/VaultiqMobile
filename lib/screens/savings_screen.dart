@@ -103,7 +103,7 @@ class SavingsScreen extends StatelessWidget {
         final insights = portfolio.insights;
 
         return Container(
-          decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+          color: dark ? AppColors.surfaceDark : AppColors.surfaceLight,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
             children: [
@@ -138,7 +138,7 @@ class SavingsScreen extends StatelessWidget {
                 child: GlassCard(
                   child: AnimatedProgressBar(
                     value: (insights.savingsProgress / 100).clamp(0, 1),
-                    color: AppColors.emerald,
+                    color: AppColors.lime,
                     height: 10,
                   ),
                 ),
@@ -163,12 +163,12 @@ class SavingsScreen extends StatelessWidget {
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
                                   color:
-                                      AppColors.emerald.withValues(alpha: 0.12),
+                                      AppColors.lime.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: const Icon(
                                   Icons.flag_rounded,
-                                  color: AppColors.emerald,
+                                  color: AppColors.lime,
                                   size: 20,
                                 ),
                               ),
@@ -200,7 +200,7 @@ class SavingsScreen extends StatelessWidget {
                           const SizedBox(height: 10),
                           AnimatedProgressBar(
                             value: pct / 100,
-                            color: AppColors.emerald,
+                            color: AppColors.lime,
                           ),
                           const SizedBox(height: 14),
                           Row(

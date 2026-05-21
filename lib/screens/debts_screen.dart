@@ -58,7 +58,7 @@ class DebtsScreen extends StatelessWidget {
       builder: (context, portfolio, _) {
         final accounts = portfolio.accounts;
         return Container(
-          decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+          color: dark ? AppColors.surfaceDark : AppColors.surfaceLight,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

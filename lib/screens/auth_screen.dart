@@ -66,9 +66,9 @@ class _AuthScreenState extends State<AuthScreen> {
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
-        child: SafeArea(
+      backgroundColor:
+          dark ? AppColors.surfaceDark : AppColors.surfaceLight,
+      body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -82,12 +82,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            gradient: AppColors.heroGradient(dark),
+                            color: AppColors.lime,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: const Icon(
                             Icons.lock_rounded,
-                            color: Colors.white,
+                            color: AppColors.onLime,
                             size: 28,
                           ),
                         ),
@@ -180,7 +180,6 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
-        ),
       ),
     );
   }

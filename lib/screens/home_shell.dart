@@ -68,7 +68,7 @@ class _HomeShellState extends State<HomeShell> {
       SyncStatus.idle => 'Local',
       SyncStatus.syncing => 'Syncing',
       SyncStatus.synced => 'Synced',
-      SyncStatus.error => 'Sync error',
+      SyncStatus.error => 'Error',
     };
 
     final screens = [
@@ -86,77 +86,26 @@ class _HomeShellState extends State<HomeShell> {
       ),
     ];
 
-    const titles = ['Vaultiq', 'Debts', 'Funds', 'Insights', 'More'];
+    final titles = ['', 'Debts', 'Funds', 'Insights', 'More'];
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor:
+          dark ? AppColors.surfaceDark : AppColors.surfaceLight,
       extendBody: true,
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 280),
-          child: Text(
-            titles[_index],
-            key: ValueKey(_index),
-          ),
-        ),
-        actions: [
-          if (_userId != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: portfolio.syncStatus == SyncStatus.synced
-                        ? AppColors.teal.withValues(alpha: 0.15)
-                        : Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (portfolio.syncStatus == SyncStatus.syncing)
-                        SizedBox(
-                          width: 12,
-                          height: 12,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.teal,
-                          ),
-                        )
-                      else
-                        Icon(
-                          portfolio.syncStatus == SyncStatus.synced
-                              ? Icons.cloud_done_rounded
-                              : Icons.cloud_off_rounded,
-                          size: 14,
-                          color: portfolio.syncStatus == SyncStatus.synced
-                              ? AppColors.teal
-                              : null,
-                        ),
-                      const SizedBox(width: 6),
-                      Text(
-                        syncLabel,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: portfolio.syncStatus == SyncStatus.synced
-                              ? AppColors.teal
-                              : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+      appBar: _index == 0
+          ? null
+          : AppBar(
+              title: Text(titles[_index]),
+              actions: [
+                if (_userId != null) _SyncBadge(portfolio: portfolio, label: syncLabel),
+              ],
             ),
-        ],
-      ),
       body: Padding(
-        padding: EdgeInsets.only(bottom: shellBottomClearance(context)),
+        padding: EdgeInsets.only(
+          top: _index == 0 ? MediaQuery.paddingOf(context).top : 0,
+          bottom: shellBottomClearance(context),
+        ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 320),
           switchInCurve: Curves.easeOutCubic,
@@ -180,53 +129,116 @@ class _HomeShellState extends State<HomeShell> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            color: dark ? AppColors.surfaceDarkElevated : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: dark ? AppColors.cardDarkBorder : Colors.grey.shade200,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: dark ? 0.4 : 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                color: Colors.black.withValues(alpha: dark ? 0.45 : 0.06),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(28),
             child: NavigationBar(
               selectedIndex: _index,
               onDestinationSelected: (i) => setState(() => _index = i),
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              indicatorColor: AppColors.lime.withValues(alpha: 0.15),
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.home_outlined),
                   selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Home',
+                  label: '',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.credit_card_outlined),
                   selectedIcon: Icon(Icons.credit_card_rounded),
-                  label: 'Debts',
+                  label: '',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.savings_outlined),
-                  selectedIcon: Icon(Icons.savings_rounded),
-                  label: 'Funds',
+                  icon: Icon(Icons.account_balance_wallet_outlined),
+                  selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+                  label: '',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.insights_outlined),
-                  selectedIcon: Icon(Icons.insights_rounded),
-                  label: 'Insights',
+                  icon: Icon(Icons.bar_chart_rounded),
+                  selectedIcon: Icon(Icons.bar_chart_rounded),
+                  label: '',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.more_horiz_rounded),
-                  selectedIcon: Icon(Icons.more_horiz_rounded),
-                  label: 'More',
+                  icon: Icon(Icons.person_outline_rounded),
+                  selectedIcon: Icon(Icons.person_rounded),
+                  label: '',
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SyncBadge extends StatelessWidget {
+  const _SyncBadge({required this.portfolio, required this.label});
+
+  final PortfolioProvider portfolio;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final synced = portfolio.syncStatus == SyncStatus.synced;
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: synced
+              ? AppColors.lime.withValues(alpha: 0.12)
+              : AppColors.cardDarkElevated,
+          borderRadius: BorderRadius.circular(20),
+          border: synced
+              ? Border.all(color: AppColors.lime.withValues(alpha: 0.35))
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (portfolio.syncStatus == SyncStatus.syncing)
+              const SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.lime,
+                ),
+              )
+            else
+              Icon(
+                synced ? Icons.cloud_done_rounded : Icons.cloud_off_rounded,
+                size: 14,
+                color: synced ? AppColors.lime : AppColors.textMuted,
+              ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: synced ? AppColors.lime : AppColors.textMuted,
+              ),
+            ),
+          ],
         ),
       ),
     );

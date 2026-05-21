@@ -117,7 +117,7 @@ class _AccountCardState extends State<AccountCard> {
         ? (paid / a.initialBalance * 100).clamp(0, 100)
         : 0.0;
     final progressColor =
-        util > 80 ? AppColors.coral : AppColors.teal;
+        util > 80 ? AppColors.orange : AppColors.lime;
 
     return FadeSlide(
       delay: widget.animationDelay,
@@ -131,13 +131,13 @@ class _AccountCardState extends State<AccountCard> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: (isCc ? AppColors.coral : AppColors.violet)
+                    color: (isCc ? AppColors.orange : AppColors.violet)
                         .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     isCc ? Icons.credit_card_rounded : Icons.account_balance_rounded,
-                    color: isCc ? AppColors.coral : AppColors.violet,
+                    color: isCc ? AppColors.orange : AppColors.violet,
                     size: 22,
                   ),
                 ),
@@ -173,7 +173,7 @@ class _AccountCardState extends State<AccountCard> {
               formatLKR(a.currentBalance),
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: AppColors.teal,
+                    color: AppColors.lime,
                   ),
             ),
             const SizedBox(height: 10),
@@ -190,7 +190,7 @@ class _AccountCardState extends State<AccountCard> {
             ] else ...[
               AnimatedProgressBar(
                 value: pct / 100,
-                color: AppColors.emerald,
+                color: AppColors.lime,
               ),
               const SizedBox(height: 6),
               Text(
@@ -212,7 +212,7 @@ class _AccountCardState extends State<AccountCard> {
                         'Log statement',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.teal,
+                          color: AppColors.lime,
                         ),
                       ),
                       const Spacer(),

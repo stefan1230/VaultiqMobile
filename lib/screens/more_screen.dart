@@ -76,7 +76,7 @@ class MoreScreen extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      decoration: BoxDecoration(gradient: AppColors.meshBackground(dark)),
+      color: dark ? AppColors.surfaceDark : AppColors.surfaceLight,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
         children: [
@@ -90,7 +90,7 @@ class MoreScreen extends StatelessWidget {
                 children: [
                   _SettingsTile(
                     icon: Icons.cloud_rounded,
-                    iconColor: AppColors.teal,
+                    iconColor: AppColors.lime,
                     title: 'Cloud sync',
                     subtitle: _syncLabel(portfolio.syncStatus),
                     trailing: userId != null
@@ -139,7 +139,7 @@ class MoreScreen extends StatelessWidget {
                 children: [
                   _SettingsTile(
                     icon: Icons.upload_file_rounded,
-                    iconColor: AppColors.emerald,
+                    iconColor: AppColors.lime,
                     title: 'Export backup',
                     onTap: () => _export(context),
                   ),
